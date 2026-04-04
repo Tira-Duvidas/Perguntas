@@ -141,7 +141,19 @@
 <script type="module">
     window.compartilharMural = () => {
     const url = window.location.href;
+    // Mantemos os 3 bullets que você solicitou para o sistema de selos
     const texto = `*Tira-dúvidas 2026* 🚀\n\nRegistre suas dúvidas e conquiste selos de participação:\n\n• 🌱 *Selo Desbravador:* Sua primeira pergunta.\n• 🧭 *Selo Explorador:* Duas perguntas realizadas.\n• 🔥 *Selo Protagonista:* Três ou mais perguntas.\n\nAcesse aqui e participe: ${url}`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'Mural PNL 2026',
+            text: texto 
+            // Removido o campo url: url para evitar a duplicidade
+        }).catch(console.error);
+    } else {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
+    }
+};
 
     if (navigator.share) {
         navigator.share({
