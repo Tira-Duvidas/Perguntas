@@ -102,6 +102,7 @@
     </div>
 
     <div class="card">
+        
         <h2 id="formTitulo">Fazer uma Pergunta</h2>
         <input type="text" id="nome" placeholder="Seu nome">
         <textarea id="pergunta" rows="3" placeholder="Sua dúvida ou insight..."></textarea>
@@ -139,30 +140,23 @@
 </div>
 
 <script type="module">
-    window.compartilharMural = () => {
+window.compartilharMural = () => {
     const url = window.location.href;
-    // Mantemos os 3 bullets que você solicitou para o sistema de selos
-    const texto = `*Tira-dúvidas 2026* 🚀\n\nRegistre suas dúvidas e conquiste selos de participação:\n\n• 🌱 *Selo Desbravador:* Sua primeira pergunta.\n• 🧭 *Selo Explorador:* Duas perguntas realizadas.\n• 🔥 *Selo Protagonista:* Três ou mais perguntas.\n\nAcesse aqui e participe: ${url}`;
+    const textoCompleto = `*Tira-dúvidas 2026* 🚀\n\nRegistre suas dúvidas e conquiste selos de participação:\n\n• 🌱 *Selo Desbravador:* Sua primeira pergunta.\n• 🧭 *Selo Explorador:* Duas perguntas realizadas.\n• 🔥 *Selo Protagonista:* Três ou mais perguntas.\n\nAcesse aqui e participe: ${url}`;
 
     if (navigator.share) {
+        // Para evitar duplicidade, enviamos TUDO no campo 'text' 
+        // e deixamos o campo 'url' vazio ou inexistente.
         navigator.share({
             title: 'Mural PNL 2026',
-            text: texto 
-            // Removido o campo url: url para evitar a duplicidade
-        }).catch(console.error);
+            text: textoCompleto
+        }).catch(err => {
+            // Caso o compartilhamento nativo falhe, usamos o link do WhatsApp
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textoCompleto)}`, '_blank');
+        });
     } else {
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
-    }
-};
-
-    if (navigator.share) {
-        navigator.share({
-            title: 'Mural PNL 2026',
-            text: texto,
-            url: url
-        }).catch(console.error);
-    } else {
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
+        // Fallback direto para WhatsApp Web/Desktop
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textoCompleto)}`, '_blank');
     }
 };
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
