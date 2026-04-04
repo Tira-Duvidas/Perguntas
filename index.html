@@ -114,7 +114,7 @@
         <strong style="color: #475569; font-size: 13px;">Como conquistar seus selos:</strong>
     </div>
     <div class="item-guia">
-        <strong style="color: #15803d; margin-bottom: 0;">🏆 DESBRAVADOR</strong> Primeira pergunta feita.
+        <strong style="color: #15803d; margin-bottom: 0;">🌱 DESBRAVADOR</strong> Primeira pergunta feita.
     </div>
     <div class="item-guia">
         <strong style="color: #0369a1; margin-bottom: 0">🧭 EXPLORADOR</strong> Duas perguntas enviadas.
@@ -225,7 +225,7 @@ onSnapshot(query(collection(db, "perguntas")), (snaps) => {
         const total = contagem[p.nome] || 0;
         if (total >= 3) badges += '<span class="badge badge-ativo">🔥 Protagonista</span>';
         else if (total === 2) badges += '<span class="badge badge-explorador">🧭 EXPLORADOR</span>';
-        else badges += '<span class="badge badge-desbravador">🏆 DESBRAVADOR</span>';
+        else badges += '<span class="badge badge-desbravador">🌱 DESBRAVADOR</span>';
         
         // LÓGICA SINTONIA (3+ VOTOS)
         if (p.votos >= 3) badges += '<span class="badge badge-sintonia">🤝 SINTONIA</span>';
