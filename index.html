@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistema Pedagógico PNL 2026</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; background:#f0f2f5; display:flex; justify-content:center; color: #1e293b; }
@@ -16,69 +15,131 @@
     h2 { color: #0f172a; font-weight: 700; margin-top: 0; }
     input, textarea { width:100%; padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid #cbd5e1; box-sizing: border-box; font-size: 1rem; }
     
-    button { padding:10px 18px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight: 600; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-    button:hover { background: #1d4ed8; transform: translateY(-1px); }
-    button:active { transform: scale(0.95); }
+    #btnEnviar { 
+        position: relative; overflow: hidden; padding:12px 20px; border:none; border-radius:10px; 
+        cursor:pointer; background:#2563eb; color:white; font-weight: 700; transition: all 0.3s ease;
+        animation: pulsar 2.5s infinite;
+    }
+    #btnEnviar:hover { transform: translateY(-2px); filter: brightness(1.1); animation: none; }
+    #btnEnviar:active { transform: scale(0.95); }
 
-    .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-right: 5px; text-transform: uppercase; margin-bottom: 5px; }
-    .badge-desbravador { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-    .badge-explorador { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
-    .badge-ativo { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
-    .badge-ouro { background: #fef3c7; color: #92400e; border: 1px solid #fbbf24; }
-    .badge-sintonia { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
-    
+    #btnCancelarEdit {
+        background: #ef4444 !important; color: white; padding: 12px 20px; border: none;
+        border-radius: 10px; font-weight: 700; cursor: pointer; margin-left: 10px;
+        transition: opacity 0.2s; display: none;
+    }
+
+    @keyframes pulsar {
+        0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
+        70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+
+    .btn-voto, .btn-autor, .btn-admin-del { 
+        background: #10b981 !important; color: white !important; padding: 6px 0; 
+        font-size: 10px; width: 65px; text-align: center; display: inline-block;
+        border-radius: 8px; margin-left: 5px; font-weight: bold; text-transform: uppercase; border: none; cursor: pointer;opacity: 0.7 !important; 
+    transition: opacity 0.2s;
+    }
+    .ja-apoiado { opacity: 0.7; cursor: default; }
+    .btn-edit-autor { background: #64748b !important; }
+    .btn-del-autor, .btn-admin-del { background: #ef4444 !important; }
+
+    #painel-controle { display: none; background: #1e293b; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    #container-grafico { display: none; margin-bottom: 20px; height: 350px; }
+    .btn-painel { padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; border: none; color: white; text-transform: uppercase; }
+
+    /* BADGES */
+    .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-right: 5px; text-transform: uppercase; margin-bottom: 5px; border: 1px solid transparent; }
+    .badge-desbravador { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+    .badge-explorador { background: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
+    .badge-ativo { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+    .badge-ouro { background: #fef3c7; color: #92400e; border-color: #fbbf24; }
+    .badge-sintonia { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+
     .pergunta { padding:22px; border: 1px solid #e2e8f0; border-radius: 14px; margin-bottom: 16px; background: #f8fafc; }
     .pergunta-ouro { background: #fffdf5 !important; border: 2px solid #fbbf24 !important; }
-    
-    #painel-controle { display: none; background: #1e293b; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
-    .legenda { font-size: 0.85rem; color: #64748b; line-height: 1.6; }
+    .timestamp { font-size: 10px; color: #94a3b8; display: block; margin-bottom: 6px; font-weight: 600; }
+    .nome-clicavel-admin { cursor: pointer; color: #2563eb; text-decoration: underline; }
 
-    @media print { .no-print { display: none !important; } }
+    /* ESTILO DO GUIA DE SELOS (GRID) */
+.guia-selos { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+    gap: 10px; 
+    margin-top: 15px; 
+    padding-top: 15px; 
+    border-top: 1px dashed #cbd5e1; 
+}
+
+.item-guia { 
+    font-size: 10px; 
+    line-height: 1.3; 
+    color: #64748b; 
+}
+
+.item-guia strong { 
+    display: block; 
+    margin-bottom: 20px; /* Espaço para o selo acima */
+    text-transform: uppercase; 
+}
+}
 </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="painel-controle" class="no-print">
-        <span style="font-size: 12px; font-weight: bold; margin-right: 10px;">🛠️ CONTROLE MESTRE:</span>
-        <button onclick="toggleRanking(true)" style="background: #10b981;">Exibir Ranking</button>
-        <button onclick="toggleRanking(false)" style="background: #ef4444;">Ocultar Ranking</button>
-        <div style="border-left: 1px solid #475569; height: 20px; margin: 0 10px;"></div>
-        <button onclick="filtrar('todas')" style="background:#64748b;">Todas</button>
-        <button onclick="filtrar('ouro')" style="background:#fbbf24; color:#92400e;">✨ Destaques</button>
-        <button onclick="filtrar('recentes')" style="background:#0ea5e9;">🕒 Recentes</button>
+    <div id="painel-controle">
+        <button class="btn-painel" onclick="toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
+        <button class="btn-painel" onclick="filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
+        <button class="btn-painel" onclick="mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
+        <button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
     </div>
 
-    <div class="card no-print">
-        <h2>Fazer uma Pergunta</h2>
-        <input type="text" id="nome" placeholder="Seu nome">
-        <textarea id="pergunta" rows="3" placeholder="Qual sua dúvida ou insight?"></textarea>
-        <button onclick="enviarPergunta()">Enviar para o Mural</button>
-        
-        <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-            <p class="legenda"><strong>Como funcionam os selos:</strong><br>
-            🌱 <strong>Desbravador:</strong> Sua primeira contribuição na aula.<br>
-            🔍 <strong>Explorador:</strong> Segunda pergunta (aprofundando o mapa).<br>
-            🔥 <strong>Ativo:</strong> 3 ou mais interações no mural.<br>
-            🤝 <strong>Sintonia:</strong> Sua pergunta recebeu 3 ou mais apoios (votos).<br>
-            ✨ <strong>Ouro:</strong> Insight selecionado pela coordenação como destaque.</p>
-        </div>
+    <div id="container-grafico" class="card">
+        <canvas id="meuGrafico"></canvas>
     </div>
 
     <div class="card">
-        <h2 id="tituloMural">Mural de Dúvidas</h2>
-        <div id="listaPerguntas"></div>
+        <h2 id="formTitulo">Fazer uma Pergunta</h2>
+        <input type="text" id="nome" placeholder="Seu nome">
+        <textarea id="pergunta" rows="3" placeholder="Sua dúvida ou insight..."></textarea>
+        <button id="btnEnviar" onclick="enviarPergunta()">ENVIAR PARA O MURAL</button>
+        <button id="btnCancelarEdit" onclick="cancelarEdicao()">CANCELAR</button>
+        
+
+
+        <div class="guia-selos">
+<div style="width: 100%; margin-bottom: 15px;">
+        <strong style="color: #475569; font-size: 13px;">Como conquistar seus selos:</strong>
+    </div>
+    <div class="item-guia">
+        <strong style="color: #15803d; margin-bottom: 0;">🏆 DESBRAVADOR</strong> Primeira pergunta feita.
+    </div>
+    <div class="item-guia">
+        <strong style="color: #0369a1; margin-bottom: 0">🧭 EXPLORADOR</strong> Duas perguntas enviadas.
+    </div>
+    <div class="item-guia">
+        <strong style="color: #4338ca; margin-bottom: 0">🔥 Protagonista</strong> 3 ou mais perguntas.
+    </div>
+    <div class="item-guia">
+        <strong style="color: #854d0e; margin-bottom: 0">🤝 SINTONIA</strong> 3 ou mais apoios (votos).
+    </div>
+    <div class="item-guia">
+        <strong style="color: #92400e; margin-bottom: 0">✨ OURO</strong> Destaque da coordenação.
+</div>
+    </div>
     </div>
 
-    <div class="card no-print" id="card-ranking" style="display: none;">
-        <h2 id="tituloRanking">Ranking de Participação</h2>
-        <canvas id="grafico"></canvas>
+    <div class="card">
+        <h2 id="tituloMural" style="cursor:pointer;">Mural de Dúvidas</h2>
+        <div id="listaPerguntas"></div>
     </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA0_tVm5YnikX-oAfABWTOblNxWD-Yq3z0",
@@ -91,97 +152,134 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const SOU_COORDENADOR = localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
-let chart;
 
-// Inicialização do Painel
+const SOU_COORDENADOR = localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
+let autorId = localStorage.getItem("autor_id") || 'art_' + Math.random().toString(36).substr(2, 9);
+localStorage.setItem("autor_id", autorId);
+
 if(SOU_COORDENADOR) document.getElementById('painel-controle').style.display = 'flex';
 
-// Função para Alternar Ranking (Salva preferência no Firebase ou Local)
-window.toggleRanking = (show) => {
-    document.getElementById('card-ranking').style.display = show ? 'block' : 'none';
+let chartInstance = null;
+const rolarFim = () => { setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 500); };
+
+window.toggleGrafico = () => {
+    const g = document.getElementById("container-grafico");
+    g.style.display = g.style.display === "block" ? "none" : "block";
+    if(g.style.display === "block") atualizarGrafico();
 };
 
-window.filtrar = (tipo) => {
-    const lista = document.getElementById("listaPerguntas");
-    const itens = Array.from(document.querySelectorAll('.pergunta-item'));
-    if (tipo === 'ouro') {
-        itens.forEach(it => it.style.display = it.classList.contains('pergunta-ouro') ? 'block' : 'none');
-    } else if (tipo === 'recentes') {
-        itens.forEach(it => it.style.display = 'block');
-        itens.sort((a, b) => b.dataset.rawtime - a.dataset.rawtime);
-        itens.forEach(it => lista.appendChild(it));
-    } else { location.reload(); }
-};
-
-async function enviarPergunta(){
-    const n = document.getElementById("nome");
-    const p = document.getElementById("pergunta");
-    if(!p.value.trim()) return;
-    await addDoc(collection(db, "perguntas"), { 
-        nome: n.value || "Anônimo", texto: p.value, votos: 0, 
-        data: serverTimestamp(), autorId: 'user_'+Math.random(), isOuro: false 
+function atualizarGrafico() {
+    const ctx = document.getElementById('meuGrafico').getContext('2d');
+    const part = {};
+    document.querySelectorAll('.pergunta strong').forEach(el => { part[el.innerText] = (part[el.innerText] || 0) + 1; });
+    if(chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: Object.keys(part), datasets: [{ label: 'Perguntas', data: Object.values(part), backgroundColor: '#2563eb' }] },
+        options: { responsive: true, maintainAspectRatio: false }
     });
-    confetti({ particleCount: 30 });
-    n.value = ""; p.value = "";
 }
-window.enviarPergunta = enviarPergunta;
 
-document.getElementById('tituloMural').onclick = () => {
-    const s = prompt("Chave:");
-    if(s === "pnl_mestre_2026") { localStorage.setItem("permissao_admin", s); location.reload(); }
+window.enviarPergunta = async () => {
+    const n = document.getElementById("nome"), p = document.getElementById("pergunta");
+    if(!p.value.trim()) return;
+    if(window.editandoId) {
+        await updateDoc(doc(db, "perguntas", window.editandoId), { nome: n.value || "Anônimo", texto: p.value });
+        cancelarEdicao();
+    } else {
+        await addDoc(collection(db, "perguntas"), { nome: n.value || "Anônimo", texto: p.value, votos: 0, autorId, data: serverTimestamp(), isOuro: false });
+        confetti({ particleCount: 30 });
+    }
+    rolarFim(); n.value = ""; p.value = "";
 };
 
-const q = query(collection(db, "perguntas"), orderBy("votos", "desc"));
-onSnapshot(q, (snaps) => {
+window.votar = async (id) => {
+    let votos = JSON.parse(localStorage.getItem("votos_realizados") || "[]");
+    if (votos.includes(id)) return;
+    await updateDoc(doc(db, "perguntas", id), { votos: increment(1) });
+    votos.push(id);
+    localStorage.setItem("votos_realizados", JSON.stringify(votos));
+};
+
+onSnapshot(query(collection(db, "perguntas")), (snaps) => {
     const lista = document.getElementById("listaPerguntas");
     lista.innerHTML = "";
+    let base = [];
     let contagem = {};
-    let temp = [];
-
     snaps.forEach(d => {
-        const p = d.data({ serverTimestamps: 'estimate' });
-        if(!p.data) return;
-        contagem[p.nome] = (contagem[p.nome] || 0) + 1;
-        temp.push({ id: d.id, ...p });
+        const data = d.data({ serverTimestamps: 'estimate' });
+        contagem[data.nome] = (contagem[data.nome] || 0) + 1;
+        base.push({ id: d.id, ...data });
     });
 
-    temp.forEach((p) => {
-        const dataObjeto = p.data.toDate();
-        let selos = p.isOuro ? `<span class="badge badge-ouro">✨ OURO</span>` : "";
-        const total = contagem[p.nome];
-        if (total === 1) selos += `<span class="badge badge-desbravador">🌱 Desbravador</span>`;
-        else if (total === 2) selos += `<span class="badge badge-explorador">🔍 Explorador</span>`;
-        else if (total >= 3) selos += `<span class="badge badge-ativo">🔥 Ativo</span>`;
-        if (p.votos >= 3) selos += `<span class="badge badge-sintonia">🤝 Sintonia</span>`;
+    const perguntasLocais = base.sort((a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis()));
+
+    perguntasLocais.forEach(p => {
+        const decorrido = Date.now() - p.data.toMillis();
+        const dt = p.data.toDate();
+        
+        const dataFormatada = dt.toLocaleDateString('pt-BR');
+        const horaFormatada = dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+
+        let badges = p.isOuro ? '<span class="badge badge-ouro">✨ OURO</span>' : '';
+        const total = contagem[p.nome] || 0;
+        if (total >= 3) badges += '<span class="badge badge-ativo">🔥 Protagonista</span>';
+        else if (total === 2) badges += '<span class="badge badge-explorador">🧭 EXPLORADOR</span>';
+        else badges += '<span class="badge badge-desbravador">🏆 DESBRAVADOR</span>';
+        
+        // LÓGICA SINTONIA (3+ VOTOS)
+        if (p.votos >= 3) badges += '<span class="badge badge-sintonia">🤝 SINTONIA</span>';
 
         const div = document.createElement("div");
-        div.className = "pergunta pergunta-item" + (p.isOuro ? " pergunta-ouro" : "");
-        div.dataset.rawtime = dataObjeto.getTime();
+        div.className = "pergunta " + (p.isOuro ? "pergunta-ouro" : "");
         div.innerHTML = `
-            ${SOU_COORDENADOR ? `<span style="font-size:10px; color:#94a3b8;">🕒 ${dataObjeto.toLocaleTimeString('pt-BR')}</span>` : ''}
-            <div style="margin-bottom: 5px;">${selos}</div>
-            <strong style="${SOU_COORDENADOR ? 'cursor:pointer' : ''}" onclick="altOuro('${p.id}',${p.isOuro})">${p.nome}</strong>
+            <span class="timestamp">📅 ${dataFormatada} às ${horaFormatada}</span>
+            <div style="margin-bottom:8px;">${badges}</div>
+            <strong class="${SOU_COORDENADOR ? 'nome-clicavel-admin' : ''}" onclick="altOuro('${p.id}',${p.isOuro})">${p.nome}</strong>
             <p>${p.texto}</p>
-            <div style="display:flex; gap:10px;">
-                <button style="background:#10b981;" onclick="votar('${p.id}')">👍 ${p.votos}</button>
-                ${SOU_COORDENADOR ? `<button style="background:#ef4444;" onclick="del('${p.id}')">🗑️</button>` : ''}
-            </div>
+            <button class="btn-voto ${JSON.parse(localStorage.getItem("votos_realizados") || "[]").includes(p.id) ? 'ja-apoiado' : ''}" onclick="votar('${p.id}')">${p.votos} 👍</button>
+            ${p.autorId === autorId && decorrido < 300000 ? `
+                <button class="btn-autor btn-edit-autor" onclick="prepararEdicao('${p.id}','${p.nome}','${p.texto}')">EDITAR</button>
+                <button class="btn-autor btn-del-autor" onclick="removerMinhaPergunta('${p.id}')">APAGAR</button>
+            ` : ''}
+            ${SOU_COORDENADOR ? `<button class="btn-admin-del" onclick="del('${p.id}')">ADMIN</button>` : ''}
         `;
         lista.appendChild(div);
     });
-    atGrafico(contagem);
 });
 
-window.altOuro = async (id, st) => { if(SOU_COORDENADOR) await updateDoc(doc(db,"perguntas",id), {isOuro: !st}); };
-window.del = async (id) => { if(SOU_COORDENADOR && confirm("Apagar?")) await deleteDoc(doc(db,"perguntas",id)); };
-window.votar = async (id) => { await updateDoc(doc(db,"perguntas",id), {votos: increment(1)}); };
+window.prepararEdicao = (id, n, t) => {
+    window.editandoId = id;
+    document.getElementById("nome").value = n; document.getElementById("pergunta").value = t;
+    document.getElementById("btnEnviar").innerText = "SALVAR ALTERAÇÕES";
+    document.getElementById("btnCancelarEdit").style.display = "inline-block";
+    window.scrollTo({top: 0, behavior: 'smooth'});
+};
 
-function atGrafico(d){
-    const ctx = document.getElementById('grafico').getContext('2d');
-    if(chart) chart.destroy();
-    chart = new Chart(ctx, { type: 'bar', data: { labels: Object.keys(d), datasets: [{ label: 'Participações', data: Object.values(d), backgroundColor: '#3b82f6' }] } });
-}
+window.cancelarEdicao = () => {
+    window.editandoId = null;
+    document.getElementById("nome").value = "";
+    document.getElementById("pergunta").value = "";
+    document.getElementById("btnEnviar").innerText = "ENVIAR PARA O MURAL";
+    document.getElementById("btnCancelarEdit").style.display = "none";
+};
+
+window.removerMinhaPergunta = async (id) => { if (confirm("Apagar pergunta?")) await deleteDoc(doc(db, "perguntas", id)); };
+window.altOuro = async (id, st) => SOU_COORDENADOR && await updateDoc(doc(db,"perguntas",id), {isOuro: !st});
+window.del = async (id) => SOU_COORDENADOR && confirm("Excluir como admin?") && await deleteDoc(doc(db,"perguntas",id));
+window.sairModoAdmin = () => { localStorage.removeItem("permissao_admin"); location.reload(); };
+window.filtrarOuro = () => { document.querySelectorAll('.pergunta').forEach(it => it.style.display = it.classList.contains('pergunta-ouro') ? 'block' : 'none'); };
+window.mostrarTudo = () => { document.querySelectorAll('.pergunta').forEach(it => it.style.display = 'block'); };
+
+let clks = 0;
+document.getElementById('tituloMural').addEventListener('click', () => {
+    if (++clks === 3) {
+        const s = prompt("Chave:");
+        if(s === "pnl_mestre_2026") { localStorage.setItem("permissao_admin", s); location.reload(); }
+        clks = 0;
+    }
+    setTimeout(() => clks = 0, 2000);
+});
 </script>
 </body>
 </html>
