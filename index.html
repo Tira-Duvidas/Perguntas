@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tira-dúvidas 2026</title>
+<title>Sistema Pedagógico PNL 2026</title>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -46,7 +46,8 @@
     .btn-del-autor, .btn-admin-del { background: #ef4444 !important; }
 
     #painel-controle { display: none; background: #1e293b; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; gap: 10px; justify-content: center; flex-wrap: wrap; }
-    #container-grafico { display: none; margin-bottom: 20px; height: 350px; }
+   
+#container-grafico { display: none; margin-bottom: 20px; height: 350px; }
     .btn-painel { padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; border: none; color: white; text-transform: uppercase; }
 
     /* BADGES */
@@ -83,7 +84,6 @@
     margin-bottom: 20px; /* Espaço para o selo acima */
     text-transform: uppercase; 
 }
-}
 </style>
 </head>
 <body>
@@ -93,8 +93,9 @@
         <button class="btn-painel" onclick="toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
         <button class="btn-painel" onclick="filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
         <button class="btn-painel" onclick="mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
-        <button onclick="compartilharMural()" style="background: #16a34a; border: none; border-radius: 10px;">📲 Compartilhar Mural</button>
-        <button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
+<button onclick="compartilharMural()" style="background: #16a34a; border: none; border-radius: 10px;">📲 Compartilhar Mural</button>
+<button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
+<button id="btnModoPrivado" class="btn-painel" onclick="toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
     </div>
 
     <div id="container-grafico" class="card">
@@ -102,7 +103,6 @@
     </div>
 
     <div class="card">
-        
         <h2 id="formTitulo">Fazer uma Pergunta</h2>
         <input type="text" id="nome" placeholder="Seu nome">
         <textarea id="pergunta" rows="3" placeholder="Sua dúvida ou insight..."></textarea>
@@ -116,13 +116,13 @@
         <strong style="color: #475569; font-size: 13px;">Como conquistar seus selos:</strong>
     </div>
     <div class="item-guia">
-        <strong style="color: #15803d; margin-bottom: 0;">🌱 DESBRAVADOR</strong> Primeira pergunta feita.
+        <strong style="color: #15803d; margin-bottom: 0;">🏆 DESBRAVADOR</strong> Primeira pergunta feita.
     </div>
     <div class="item-guia">
         <strong style="color: #0369a1; margin-bottom: 0">🧭 EXPLORADOR</strong> Duas perguntas enviadas.
     </div>
     <div class="item-guia">
-        <strong style="color: #4338ca; margin-bottom: 0">🏆 Protagonista</strong> 3 ou mais perguntas.
+        <strong style="color: #4338ca; margin-bottom: 0">🔥 Protagonista</strong> 3 ou mais perguntas.
     </div>
     <div class="item-guia">
         <strong style="color: #854d0e; margin-bottom: 0">🤝 SINTONIA</strong> 3 ou mais apoios (votos).
@@ -140,23 +140,19 @@
 </div>
 
 <script type="module">
+
 window.compartilharMural = () => {
     const url = window.location.href;
-    const textoCompleto = `*Tira-dúvidas 2026* 🚀\n\nRegistre suas dúvidas e conquiste selos de participação:\n\n• 🌱 *Selo Desbravador:* Sua primeira pergunta.\n• 🧭 *Selo Explorador:* Duas perguntas realizadas.\n• 🏆 *Selo Protagonista:* Três ou mais perguntas.\n\nAcesse aqui e participe: ${url}`;
+    const texto = `*SISTEMA PEDAGÓGICO PNL 2026* 🚀\n\nParticipe do nosso Mural Interativo! Registre seus insights e concorra aos selos de participação:\n\n• 🌱 *Selo Desbravador:* Sua primeira pergunta na aula.\n• 🔥 *Selo Ativo:* 3 ou mais contribuições.\n• ✨ *Selo Ouro:* Insight selecionado pela coordenação.\n\nAcesse aqui e participe: ${url}`;
 
     if (navigator.share) {
-        // Para evitar duplicidade, enviamos TUDO no campo 'text' 
-        // e deixamos o campo 'url' vazio ou inexistente.
         navigator.share({
             title: 'Mural PNL 2026',
-            text: textoCompleto
-        }).catch(err => {
-            // Caso o compartilhamento nativo falhe, usamos o link do WhatsApp
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textoCompleto)}`, '_blank');
-        });
+            text: texto,
+            url: url
+        }).catch(console.error);
     } else {
-        // Fallback direto para WhatsApp Web/Desktop
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textoCompleto)}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
     }
 };
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
@@ -175,6 +171,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const SOU_COORDENADOR = localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
+let modoPrivado = localStorage.getItem("modo_privado") === "true";
+function atualizarTextoModoPrivado() {
+    const btn = document.getElementById("btnModoPrivado");
+    if (!btn) return;
+
+    if (modoPrivado) {
+        btn.innerText = "🔒 Visão do Aluno";
+    } else {
+        btn.innerText = "🔓 Visão do coordenador";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", atualizarTextoModoPrivado);
 let autorId = localStorage.getItem("autor_id") || 'art_' + Math.random().toString(36).substr(2, 9);
 localStorage.setItem("autor_id", autorId);
 
@@ -235,7 +244,15 @@ onSnapshot(query(collection(db, "perguntas")), (snaps) => {
 
     const perguntasLocais = base.sort((a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis()));
 
-    perguntasLocais.forEach(p => {
+    perguntasLocais
+.filter(p => {
+    if(!modoPrivado) return true;
+
+    // No modo privado:
+    // Modo privado = visão de aluno para qualquer pessoa
+    return p.autorId === autorId; // autor vê só a própria
+})
+.forEach(p => {
         const decorrido = Date.now() - p.data.toMillis();
         const dt = p.data.toDate();
         
@@ -244,9 +261,9 @@ onSnapshot(query(collection(db, "perguntas")), (snaps) => {
 
         let badges = p.isOuro ? '<span class="badge badge-ouro">✨ OURO</span>' : '';
         const total = contagem[p.nome] || 0;
-        if (total >= 3) badges += '<span class="badge badge-ativo">🏆 Protagonista</span>';
+        if (total >= 3) badges += '<span class="badge badge-ativo">🔥 Protagonista</span>';
         else if (total === 2) badges += '<span class="badge badge-explorador">🧭 EXPLORADOR</span>';
-        else badges += '<span class="badge badge-desbravador">🌱 DESBRAVADOR</span>';
+        else badges += '<span class="badge badge-desbravador">🏆 DESBRAVADOR</span>';
         
         // LÓGICA SINTONIA (3+ VOTOS)
         if (p.votos >= 3) badges += '<span class="badge badge-sintonia">🤝 SINTONIA</span>';
@@ -288,7 +305,14 @@ window.cancelarEdicao = () => {
 window.removerMinhaPergunta = async (id) => { if (confirm("Apagar pergunta?")) await deleteDoc(doc(db, "perguntas", id)); };
 window.altOuro = async (id, st) => SOU_COORDENADOR && await updateDoc(doc(db,"perguntas",id), {isOuro: !st});
 window.del = async (id) => SOU_COORDENADOR && confirm("Excluir como admin?") && await deleteDoc(doc(db,"perguntas",id));
-window.sairModoAdmin = () => { localStorage.removeItem("permissao_admin"); location.reload(); };
+window.sairModoAdmin = () => {
+    localStorage.removeItem("permissao_admin");
+
+    // força modo privado ao sair
+    localStorage.setItem("modo_privado", "true");
+
+    location.reload();
+};
 window.filtrarOuro = () => { document.querySelectorAll('.pergunta').forEach(it => it.style.display = it.classList.contains('pergunta-ouro') ? 'block' : 'none'); };
 window.mostrarTudo = () => { document.querySelectorAll('.pergunta').forEach(it => it.style.display = 'block'); };
 
@@ -301,6 +325,12 @@ document.getElementById('tituloMural').addEventListener('click', () => {
     }
     setTimeout(() => clks = 0, 2000);
 });
+window.toggleModoPrivado = () => {
+    modoPrivado = !modoPrivado;
+    localStorage.setItem("modo_privado", modoPrivado);
+    atualizarTextoModoPrivado();
+    location.reload();
+};
 </script>
 </body>
 </html>
