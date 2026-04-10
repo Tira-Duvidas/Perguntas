@@ -175,21 +175,19 @@ const controleRef = doc(db, "controle", "sala");
 onSnapshot(controleRef, (snap) => {
     if (snap.exists()) {
         modoPrivadoGlobal = snap.data().modoPrivado;
-        modoPrivado = modoPrivadoGlobal;
         atualizarTextoModoPrivado();
     }
 });
 
 const SOU_COORDENADOR = localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
-let modoPrivado = false;
 function atualizarTextoModoPrivado() {
     const btn = document.getElementById("btnModoPrivado");
     if (!btn) return;
 
-    if (modoPrivado) {
+   if (modoPrivadoGlobal) {
         btn.innerText = "🔒 Visão do Aluno";
     } else {
-        btn.innerText = "🔓 Visão do coordenador";
+        btn.innerText = "🔓 Visão do Coordenador";
     }
 }
 
