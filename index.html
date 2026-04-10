@@ -169,9 +169,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+let modoPrivadoGlobal = false;
+const controleRef = doc(db, "controle", "sala");
+
+onSnapshot(controleRef, (snap) => {
+    if (snap.exists()) {
+        modoPrivadoGlobal = snap.data().modoPrivado;
+        modoPrivado = modoPrivadoGlobal;
+        atualizarTextoModoPrivado();
+    }
+});
 
 const SOU_COORDENADOR = localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
-let modoPrivado = localStorage.getItem("modo_privado") === "true";
+let modoPrivado = false;
 function atualizarTextoModoPrivado() {
     const btn = document.getElementById("btnModoPrivado");
     if (!btn) return;
@@ -246,7 +256,7 @@ onSnapshot(query(collection(db, "perguntas")), (snaps) => {
 
     perguntasLocais
 .filter(p => {
-    if(!modoPrivado) return true;
+    if(!modoPrivadoGlobal) return true;
 
     // No modo privado:
     // Modo privado = visão de aluno para qualquer pessoa
@@ -325,12 +335,12 @@ document.getElementById('tituloMural').addEventListener('click', () => {
     }
     setTimeout(() => clks = 0, 2000);
 });
-window.toggleModoPrivado = () => {
-    modoPrivado = !modoPrivado;
-    localStorage.setItem("modo_privado", modoPrivado);
-    atualizarTextoModoPrivado();
-    location.reload();
-};
-</script>
+window.toggleModoPrivado = async () => {
+    if (!SOU_COORDENADOR) return;
+
+    await updateDoc(controleRef, {
+        modoPrivado: !modoPrivadoGlobal
+    });
+};</script>
 </body>
 </html>
