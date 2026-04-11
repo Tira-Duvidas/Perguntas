@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -175,19 +174,12 @@ const controleRef = doc(db, "controle", "sala");
 
 onSnapshot(controleRef, (snap) => {
     if (snap.exists()) {
-        modoPrivadoGlobal = snap.data().modoPrivado === true;
+        modoPrivadoGlobal = snap.data().modoPrivado;
         atualizarTextoModoPrivado();
-
- // 👇 COLE ESTA LINHA AQUI
-        if (snapshotPerguntasGlobal) {
-            renderizarPerguntas(snapshotPerguntasGlobal);
-        }
     }
 });
 
-function souCoordenador() {
-    return localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
-}
+const SOU_COORDENADOR = localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
 function atualizarTextoModoPrivado() {
     const btn = document.getElementById("btnModoPrivado");
     if (!btn) return;
@@ -203,9 +195,7 @@ document.addEventListener("DOMContentLoaded", atualizarTextoModoPrivado);
 let autorId = localStorage.getItem("autor_id") || 'art_' + Math.random().toString(36).substr(2, 9);
 localStorage.setItem("autor_id", autorId);
 
-if(souCoordenador()) {
-    document.getElementById('painel-controle').style.display = 'flex';
-}
+if(SOU_COORDENADOR) document.getElementById('painel-controle').style.display = 'flex';
 
 let chartInstance = null;
 const rolarFim = () => { setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 500); };
@@ -248,57 +238,42 @@ window.votar = async (id) => {
     votos.push(id);
     localStorage.setItem("votos_realizados", JSON.stringify(votos));
 };
-let snapshotPerguntasGlobal = null;
-import { orderBy } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-onSnapshot(
-    query(collection(db, "perguntas"), orderBy("data", "asc")),
-    (snaps) => {
-        snapshotPerguntasGlobal = snaps;
-        renderizarPerguntas(snaps);
-    }
-);
-// 👇 COLE AQUI
-function renderizarPerguntas(snaps) {
-
+onSnapshot(query(collection(db, "perguntas")), (snaps) => {
     const lista = document.getElementById("listaPerguntas");
     lista.innerHTML = "";
-
     let base = [];
     let contagem = {};
-
     snaps.forEach(d => {
         const data = d.data({ serverTimestamps: 'estimate' });
         contagem[data.nome] = (contagem[data.nome] || 0) + 1;
         base.push({ id: d.id, ...data });
     });
 
-    const perguntasLocais = base.sort((a, b) =>
-        (b.votos - a.votos) ||
-        (a.data?.toMillis?.() || 0) - (b.data?.toMillis?.() || 0)
-    );
+    const perguntasLocais = base.sort((a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis()));
 
     perguntasLocais
-    .filter(p => {
+.filter(p => {
+    if(!modoPrivadoGlobal) return true;
 
-        if (!modoPrivadoGlobal) return true;
-        if (souCoordenador()) return true;
-        return p.autorId === autorId;
-
-    })
-    .forEach(p => {
-
-        const dt = p.data?.toDate?.() || new Date();
+    // No modo privado:
+    // Modo privado = visão de aluno para qualquer pessoa
+    return p.autorId === autorId; // autor vê só a própria
+})
+.forEach(p => {
+        const decorrido = Date.now() - p.data.toMillis();
+        const dt = p.data.toDate();
+        
         const dataFormatada = dt.toLocaleDateString('pt-BR');
         const horaFormatada = dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
         let badges = p.isOuro ? '<span class="badge badge-ouro">✨ OURO</span>' : '';
         const total = contagem[p.nome] || 0;
-
         if (total >= 3) badges += '<span class="badge badge-ativo">🔥 Protagonista</span>';
         else if (total === 2) badges += '<span class="badge badge-explorador">🧭 EXPLORADOR</span>';
         else badges += '<span class="badge badge-desbravador">🏆 DESBRAVADOR</span>';
-
+        
+        // LÓGICA SINTONIA (3+ VOTOS)
         if (p.votos >= 3) badges += '<span class="badge badge-sintonia">🤝 SINTONIA</span>';
 
         const div = document.createElement("div");
@@ -306,16 +281,19 @@ function renderizarPerguntas(snaps) {
         div.innerHTML = `
             <span class="timestamp">📅 ${dataFormatada} às ${horaFormatada}</span>
             <div style="margin-bottom:8px;">${badges}</div>
-            <strong class="${souCoordenador() ? 'nome-clicavel-admin' : ''}" onclick="altOuro('${p.id}',${p.isOuro})">${p.nome}</strong>
+            <strong class="${SOU_COORDENADOR ? 'nome-clicavel-admin' : ''}" onclick="altOuro('${p.id}',${p.isOuro})">${p.nome}</strong>
             <p>${p.texto}</p>
-            <button class="btn-voto">${p.votos} 👍</button>
+            <button class="btn-voto ${JSON.parse(localStorage.getItem("votos_realizados") || "[]").includes(p.id) ? 'ja-apoiado' : ''}" onclick="votar('${p.id}')">${p.votos} 👍</button>
+            ${p.autorId === autorId && decorrido < 300000 ? `
+                <button class="btn-autor btn-edit-autor" onclick="prepararEdicao('${p.id}','${p.nome}','${p.texto}')">EDITAR</button>
+                <button class="btn-autor btn-del-autor" onclick="removerMinhaPergunta('${p.id}')">APAGAR</button>
+            ` : ''}
+            ${SOU_COORDENADOR ? `<button class="btn-admin-del" onclick="del('${p.id}')">ADMIN</button>` : ''}
         `;
-
         lista.appendChild(div);
     });
-}
+});
 
- 
 window.prepararEdicao = (id, n, t) => {
     window.editandoId = id;
     document.getElementById("nome").value = n; document.getElementById("pergunta").value = t;
@@ -333,14 +311,15 @@ window.cancelarEdicao = () => {
 };
 
 window.removerMinhaPergunta = async (id) => { if (confirm("Apagar pergunta?")) await deleteDoc(doc(db, "perguntas", id)); };
-window.altOuro = async (id, st) => souCoordenador() && await updateDoc(doc(db,"perguntas",id), {isOuro: !st});
-window.del = async (id) => souCoordenador() && confirm("Excluir como admin?") && await deleteDoc(doc(db,"perguntas",id));
+window.altOuro = async (id, st) => SOU_COORDENADOR && await updateDoc(doc(db,"perguntas",id), {isOuro: !st});
+window.del = async (id) => SOU_COORDENADOR && confirm("Excluir como admin?") && await deleteDoc(doc(db,"perguntas",id));
 window.sairModoAdmin = () => {
     localStorage.removeItem("permissao_admin");
 
     // força modo privado ao sair
     localStorage.setItem("modo_privado", "true");
 
+    location.reload();
 };
 window.filtrarOuro = () => { document.querySelectorAll('.pergunta').forEach(it => it.style.display = it.classList.contains('pergunta-ouro') ? 'block' : 'none'); };
 window.mostrarTudo = () => { document.querySelectorAll('.pergunta').forEach(it => it.style.display = 'block'); };
@@ -354,15 +333,12 @@ document.getElementById('tituloMural').addEventListener('click', () => {
     }
     setTimeout(() => clks = 0, 2000);
 });
-import { setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
 window.toggleModoPrivado = async () => {
-    if (!souCoordenador()) return;
+    if (!SOU_COORDENADOR) return;
 
-    await setDoc(controleRef, {
+    await updateDoc(controleRef, {
         modoPrivado: !modoPrivadoGlobal
-    }, { merge: true });
-};
-</script>
+    });
+};</script>
 </body>
 </html>
