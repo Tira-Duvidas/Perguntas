@@ -90,11 +90,11 @@
 
 <div class="container">
     <div id="painel-controle">
-        <button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
         <button class="btn-painel" onclick="toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
         <button class="btn-painel" onclick="filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
         <button class="btn-painel" onclick="mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
 <button onclick="compartilharMural()" style="background: #16a34a; border: none; border-radius: 10px;">📲 Compartilhar Mural</button>
+<button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
 <button id="btnModoPrivado" class="btn-painel" onclick="toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
     </div>
 
@@ -124,7 +124,7 @@
     <div class="item-guia">
         <strong style="color: #4338ca; margin-bottom: 0">🔥 Protagonista</strong> 3 ou mais perguntas.
     </div>
-    <div class="item-guia">
+    <div class="item-guia" id="guia-sintonia">
         <strong style="color: #854d0e; margin-bottom: 0">🤝 SINTONIA</strong> 3 ou mais apoios (votos).
     </div>
     <div class="item-guia">
@@ -293,6 +293,9 @@ function renderizarPerguntas() {
     if (!lista) return;
     lista.innerHTML = "";
 
+    const guiaSintonia = document.getElementById("guia-sintonia");
+    if (guiaSintonia) guiaSintonia.style.display = modoPrivadoGlobal ? "none" : "";
+
     const perguntasOrdenadas = [...cachePerguntasBase].sort(
         (a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis())
     );
@@ -310,7 +313,7 @@ function renderizarPerguntas() {
             const dataFormatada = dt.toLocaleDateString('pt-BR');
             const horaFormatada = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-            let badges = p.isOuro ? '<span class="badge badge-ouro">✨ Visto pelo coord.</span>' : '';
+            let badges = p.isOuro ? '<span class="badge badge-ouro">✨ OURO</span>' : '';
             const total = cacheContagem[p.nome] || 0;
             if (total >= 3) badges += '<span class="badge badge-ativo">🔥 Protagonista</span>';
             else if (total === 2) badges += '<span class="badge badge-explorador">🧭 EXPLORADOR</span>';
