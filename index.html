@@ -244,6 +244,49 @@ window.votar = async (id) => {
 // Cache de perguntas para redesenho sem nova consulta ao Firestore
 let cachePerguntasBase = [];
 let cacheContagem = {};
+let idsConhecidos = null; // null = primeira carga, ainda não notifica
+
+function tocarSom() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [523, 659, 784].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.3);
+            osc.start(ctx.currentTime + i * 0.15);
+            osc.stop(ctx.currentTime + i * 0.15 + 0.3);
+        });
+    } catch(e) {}
+}
+
+function notificarNovaPergunta(nome) {
+    tocarSom();
+    if (Notification.permission === "granted") {
+        new Notification("💬 Nova pergunta no mural!", {
+            body: `${nome} acabou de enviar uma pergunta.`,
+            icon: "https://cdn-icons-png.flaticon.com/512/1373/1373293.png"
+        });
+    }
+    const toast = document.createElement("div");
+    toast.innerText = `🔔 Nova pergunta de ${nome}!`;
+    Object.assign(toast.style, {
+        position: "fixed", bottom: "30px", right: "30px",
+        background: "#2563eb", color: "white", padding: "14px 22px",
+        borderRadius: "12px", fontWeight: "bold", fontSize: "14px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.2)", zIndex: 9999,
+        transition: "opacity 0.5s", opacity: "1"
+    });
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 500); }, 4000);
+}
+
+if (SOU_COORDENADOR && Notification.permission === "default") {
+    Notification.requestPermission();
+}
 
 function renderizarPerguntas() {
     const lista = document.getElementById("listaPerguntas");
@@ -295,11 +338,25 @@ function renderizarPerguntas() {
 onSnapshot(query(collection(db, "perguntas")), (snaps) => {
     cachePerguntasBase = [];
     cacheContagem = {};
+    const novosIds = new Set();
+
     snaps.forEach(d => {
         const data = d.data({ serverTimestamps: 'estimate' });
         cacheContagem[data.nome] = (cacheContagem[data.nome] || 0) + 1;
         cachePerguntasBase.push({ id: d.id, ...data });
+        novosIds.add(d.id);
     });
+
+    // Detecta perguntas novas e notifica — SOMENTE O COORDENADOR
+    if (SOU_COORDENADOR && idsConhecidos !== null) {
+        cachePerguntasBase.forEach(p => {
+            if (!idsConhecidos.has(p.id) && p.autorId !== autorId) {
+                notificarNovaPergunta(p.nome);
+            }
+        });
+    }
+    idsConhecidos = novosIds;
+
     renderizarPerguntas();
 });
 
