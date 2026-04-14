@@ -6,155 +6,71 @@
 <title>Sistema Pedagógico PNL 2026</title>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; background:#f0f2f5; display:flex; justify-content:center; color: #1e293b; }
     .container { width:95%; max-width:1100px; margin-top:20px; padding-bottom: 60px; }
     .card { background:white; padding:25px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin-bottom:20px; border: 1px solid #e2e8f0; position: relative; }
-    
     h2 { color: #0f172a; font-weight: 700; margin-top: 0; }
     input, textarea { width:100%; padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid #cbd5e1; box-sizing: border-box; font-size: 1rem; }
-    
-    #btnEnviar { 
-        position: relative; overflow: hidden; padding:12px 20px; border:none; border-radius:10px; 
-        cursor:pointer; background:#2563eb; color:white; font-weight: 700; transition: all 0.3s ease;
-        animation: pulsar 2.5s infinite;
-    }
+    #btnEnviar { position: relative; overflow: hidden; padding:12px 20px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight: 700; transition: all 0.3s ease; animation: pulsar 2.5s infinite; }
     #btnEnviar:hover { transform: translateY(-2px); filter: brightness(1.1); animation: none; }
     #btnEnviar:active { transform: scale(0.95); }
-
-    #btnCancelarEdit {
-        background: #ef4444 !important; color: white; padding: 12px 20px; border: none;
-        border-radius: 10px; font-weight: 700; cursor: pointer; margin-left: 10px;
-        transition: opacity 0.2s; display: none;
-    }
-
-    @keyframes pulsar {
-        0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
-        70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
-    }
-
-    .btn-voto, .btn-autor, .btn-admin-del { 
-        background: #10b981 !important; color: white !important; padding: 6px 0; 
-        font-size: 10px; width: 65px; text-align: center; display: inline-block;
-        border-radius: 8px; margin-left: 5px; font-weight: bold; text-transform: uppercase; border: none; cursor: pointer;opacity: 0.7 !important; 
-    transition: opacity 0.2s;
-    }
+    #btnCancelarEdit { background: #ef4444 !important; color: white; padding: 12px 20px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-left: 10px; transition: opacity 0.2s; display: none; }
+    @keyframes pulsar { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
+    .btn-voto, .btn-autor, .btn-admin-del { background: #10b981 !important; color: white !important; padding: 6px 0; font-size: 10px; width: 65px; text-align: center; display: inline-block; border-radius: 8px; margin-left: 5px; font-weight: bold; text-transform: uppercase; border: none; cursor: pointer; opacity: 0.7 !important; transition: opacity 0.2s; }
     .ja-apoiado { opacity: 0.7; cursor: default; }
     .btn-edit-autor { background: #64748b !important; }
     .btn-del-autor, .btn-admin-del { background: #ef4444 !important; }
-
     #painel-controle { display: none; background: #1e293b; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; gap: 10px; justify-content: center; flex-wrap: wrap; }
-   
-#container-grafico { display: none; margin-bottom: 20px; height: 350px; }
+    #container-grafico { display: none; margin-bottom: 20px; height: 350px; }
     .btn-painel { padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; border: none; color: white; text-transform: uppercase; }
-
-    /* BADGES */
     .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-right: 5px; text-transform: uppercase; margin-bottom: 5px; border: 1px solid transparent; }
     .badge-desbravador { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
     .badge-explorador { background: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
     .badge-ativo { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
     .badge-ouro { background: #fef3c7; color: #92400e; border-color: #fbbf24; }
     .badge-sintonia { background: #fef9c3; color: #854d0e; border-color: #fde047; }
-
     .pergunta { padding:22px; border: 1px solid #e2e8f0; border-radius: 14px; margin-bottom: 16px; background: #f8fafc; }
     .pergunta-ouro { background: #fffdf5 !important; border: 2px solid #fbbf24 !important; }
     .timestamp { font-size: 10px; color: #94a3b8; display: block; margin-bottom: 6px; font-weight: 600; }
     .nome-clicavel-admin { cursor: pointer; color: #2563eb; text-decoration: underline; }
-
-    /* ESTILO DO GUIA DE SELOS (GRID) */
-.guia-selos { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-    gap: 10px; 
-    margin-top: 15px; 
-    padding-top: 15px; 
-    border-top: 1px dashed #cbd5e1; 
-}
-
-.item-guia { 
-    font-size: 10px; 
-    line-height: 1.3; 
-    color: #64748b; 
-}
-
-.item-guia strong { 
-    display: block; 
-    margin-bottom: 20px; /* Espaço para o selo acima */
-    text-transform: uppercase; 
-}
+    .guia-selos { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1; }
+    .item-guia { font-size: 10px; line-height: 1.3; color: #64748b; }
+    .item-guia strong { display: block; margin-bottom: 20px; text-transform: uppercase; }
 </style>
 </head>
 <body>
-
 <div class="container">
     <div id="painel-controle">
         <button class="btn-painel" onclick="toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
         <button class="btn-painel" onclick="filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
         <button class="btn-painel" onclick="mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
-<button onclick="compartilharMural()" style="background: #16a34a; border: none; border-radius: 10px;">📲 Compartilhar Mural</button>
-<button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
-<button id="btnModoPrivado" class="btn-painel" onclick="toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
+        <button onclick="compartilharMural()" style="background:#16a34a;border:none;border-radius:10px;padding:8px 15px;color:white;font-weight:bold;font-size:11px;cursor:pointer;">📲 Compartilhar Mural</button>
+        <button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
+        <button id="btnModoPrivado" class="btn-painel" onclick="toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
     </div>
-
-    <div id="container-grafico" class="card">
-        <canvas id="meuGrafico"></canvas>
-    </div>
-
+    <div id="container-grafico" class="card"><canvas id="meuGrafico"></canvas></div>
     <div class="card">
         <h2 id="formTitulo">Fazer uma Pergunta</h2>
         <input type="text" id="nome" placeholder="Seu nome">
         <textarea id="pergunta" rows="3" placeholder="Sua dúvida ou insight..."></textarea>
         <button id="btnEnviar" onclick="enviarPergunta()">ENVIAR PARA O MURAL</button>
         <button id="btnCancelarEdit" onclick="cancelarEdicao()">CANCELAR</button>
-        
-
-
         <div class="guia-selos">
-<div style="width: 100%; margin-bottom: 15px;">
-        <strong style="color: #475569; font-size: 13px;">Como conquistar seus selos:</strong>
+            <div style="width:100%;margin-bottom:15px;"><strong style="color:#475569;font-size:13px;">Como conquistar seus selos:</strong></div>
+            <div class="item-guia"><strong style="color:#15803d;margin-bottom:0;">🏆 DESBRAVADOR</strong> Primeira pergunta feita.</div>
+            <div class="item-guia"><strong style="color:#0369a1;margin-bottom:0">🧭 EXPLORADOR</strong> Duas perguntas enviadas.</div>
+            <div class="item-guia"><strong style="color:#4338ca;margin-bottom:0">🔥 Protagonista</strong> 3 ou mais perguntas.</div>
+            <div class="item-guia" id="guia-sintonia"><strong style="color:#854d0e;margin-bottom:0">🤝 SINTONIA</strong> 3 ou mais apoios (votos).</div>
+            <div class="item-guia"><strong style="color:#92400e;margin-bottom:0">✨ OURO</strong> Destaque da coordenação.</div>
+        </div>
     </div>
-    <div class="item-guia">
-        <strong style="color: #15803d; margin-bottom: 0;">🏆 DESBRAVADOR</strong> Primeira pergunta feita.
-    </div>
-    <div class="item-guia">
-        <strong style="color: #0369a1; margin-bottom: 0">🧭 EXPLORADOR</strong> Duas perguntas enviadas.
-    </div>
-    <div class="item-guia">
-        <strong style="color: #4338ca; margin-bottom: 0">🔥 Protagonista</strong> 3 ou mais perguntas.
-    </div>
-    <div class="item-guia" id="guia-sintonia">
-        <strong style="color: #854d0e; margin-bottom: 0">🤝 SINTONIA</strong> 3 ou mais apoios (votos).
-    </div>
-    <div class="item-guia">
-        <strong style="color: #92400e; margin-bottom: 0">✨ OURO</strong> Destaque da coordenação.
-</div>
-    </div>
-    </div>
-
     <div class="card">
         <h2 id="tituloMural" style="cursor:pointer;">Mural de Dúvidas</h2>
         <div id="listaPerguntas"></div>
     </div>
 </div>
-
 <script type="module">
-
-window.compartilharMural = () => {
-    const url = window.location.href;
-    const texto = `*SISTEMA PEDAGÓGICO PNL 2026* 🚀\n\nParticipe do nosso Mural Interativo! Registre seus insights e concorra aos selos de participação:\n\n• 🌱 *Selo Desbravador:* Sua primeira pergunta na aula.\n• 🔥 *Selo Ativo:* 3 ou mais contribuições.\n• ✨ *Selo Ouro:* Insight selecionado pela coordenação.\n\nAcesse aqui e participe: ${url}`;
-
-    if (navigator.share) {
-        navigator.share({
-            title: 'Mural PNL 2026',
-            text: texto,
-            url: url
-        }).catch(console.error);
-    } else {
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
-    }
-};
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
@@ -169,157 +85,56 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-let modoPrivadoGlobal = false;
 const controleRef = doc(db, "controle", "sala");
 
-onSnapshot(controleRef, (snap) => {
-    if (snap.exists()) {
-        modoPrivadoGlobal = snap.data().modoPrivado;
-        atualizarTextoModoPrivado();
-        // 🔥 redesenha o mural — usa setTimeout para garantir que renderizarPerguntas já foi declarada
-        setTimeout(() => { if (typeof renderizarPerguntas === "function") renderizarPerguntas(); }, 0);
-    }
-});
-
+// ── Estado global ──────────────────────────────────────────────
 const SOU_COORDENADOR = localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
-function atualizarTextoModoPrivado() {
-    const btn = document.getElementById("btnModoPrivado");
-    if (!btn) return;
-
-   if (modoPrivadoGlobal) {
-        btn.innerText = "🔒 Visão do Aluno";
-    } else {
-        btn.innerText = "🔓 Visão do Coordenador";
-    }
-}
-
-document.addEventListener("DOMContentLoaded", atualizarTextoModoPrivado);
 let autorId = localStorage.getItem("autor_id") || 'art_' + Math.random().toString(36).substr(2, 9);
 localStorage.setItem("autor_id", autorId);
-
-if(SOU_COORDENADOR) document.getElementById('painel-controle').style.display = 'flex';
-
-let chartInstance = null;
-const rolarFim = () => { setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 500); };
-
-window.toggleGrafico = () => {
-    const g = document.getElementById("container-grafico");
-    g.style.display = g.style.display === "block" ? "none" : "block";
-    if(g.style.display === "block") atualizarGrafico();
-};
-
-function atualizarGrafico() {
-    const ctx = document.getElementById('meuGrafico').getContext('2d');
-    const part = {};
-    document.querySelectorAll('.pergunta strong').forEach(el => { part[el.innerText] = (part[el.innerText] || 0) + 1; });
-    if(chartInstance) chartInstance.destroy();
-    chartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: { labels: Object.keys(part), datasets: [{ label: 'Perguntas', data: Object.values(part), backgroundColor: '#2563eb' }] },
-        options: { responsive: true, maintainAspectRatio: false }
-    });
-}
-
-window.enviarPergunta = async () => {
-    const n = document.getElementById("nome"), p = document.getElementById("pergunta");
-    if(!p.value.trim()) return;
-    if(window.editandoId) {
-        await updateDoc(doc(db, "perguntas", window.editandoId), { nome: n.value || "Anônimo", texto: p.value });
-        cancelarEdicao();
-    } else {
-        await addDoc(collection(db, "perguntas"), { nome: n.value || "Anônimo", texto: p.value, votos: 0, autorId, data: serverTimestamp(), isOuro: false });
-        confetti({ particleCount: 30 });
-    }
-    rolarFim(); n.value = ""; p.value = "";
-};
-
-window.votar = async (id) => {
-    let votos = JSON.parse(localStorage.getItem("votos_realizados") || "[]");
-    if (votos.includes(id)) return;
-    await updateDoc(doc(db, "perguntas", id), { votos: increment(1) });
-    votos.push(id);
-    localStorage.setItem("votos_realizados", JSON.stringify(votos));
-};
-
-// Cache de perguntas para redesenho sem nova consulta ao Firestore
+let modoPrivadoGlobal = false;
 let cachePerguntasBase = [];
 let cacheContagem = {};
-let idsConhecidos = null; // null = primeira carga, ainda não notifica
+let idsConhecidos = null;
+let chartInstance = null;
 
-function tocarSom() {
-    try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        [523, 659, 784].forEach((freq, i) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.frequency.value = freq;
-            osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.3);
-            osc.start(ctx.currentTime + i * 0.15);
-            osc.stop(ctx.currentTime + i * 0.15 + 0.3);
-        });
-    } catch(e) {}
+// ── UI inicial ─────────────────────────────────────────────────
+if (SOU_COORDENADOR) {
+    document.getElementById('painel-controle').style.display = 'flex';
+    if (Notification.permission === "default") Notification.requestPermission();
 }
 
-function notificarNovaPergunta(nome) {
-    tocarSom();
-    if (Notification.permission === "granted") {
-        new Notification("💬 Nova pergunta no mural!", {
-            body: `${nome} acabou de enviar uma pergunta.`,
-            icon: "https://cdn-icons-png.flaticon.com/512/1373/1373293.png"
-        });
-    }
-    const toast = document.createElement("div");
-    toast.innerText = `🔔 Nova pergunta de ${nome}!`;
-    Object.assign(toast.style, {
-        position: "fixed", bottom: "30px", right: "30px",
-        background: "#2563eb", color: "white", padding: "14px 22px",
-        borderRadius: "12px", fontWeight: "bold", fontSize: "14px",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.2)", zIndex: 9999,
-        transition: "opacity 0.5s", opacity: "1"
-    });
-    document.body.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 500); }, 4000);
+// ── Funções — todas declaradas ANTES dos listeners ─────────────
+
+function atualizarBotaoModo() {
+    const btn = document.getElementById("btnModoPrivado");
+    if (btn) btn.innerText = modoPrivadoGlobal ? "🔒 Visão do Aluno" : "🔓 Visão do Coordenador";
 }
 
-if (SOU_COORDENADOR && Notification.permission === "default") {
-    Notification.requestPermission();
+function atualizarGuiaSintonia() {
+    const el = document.getElementById("guia-sintonia");
+    if (el) el.style.display = modoPrivadoGlobal ? "none" : "";
 }
 
 function renderizarPerguntas() {
     const lista = document.getElementById("listaPerguntas");
     if (!lista) return;
     lista.innerHTML = "";
+    atualizarGuiaSintonia();
 
-    const guiaSintonia = document.getElementById("guia-sintonia");
-    if (guiaSintonia) guiaSintonia.style.display = modoPrivadoGlobal ? "none" : "";
-
-    const perguntasOrdenadas = [...cachePerguntasBase].sort(
-        (a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis())
-    );
-
-    perguntasOrdenadas
-        .filter(p => {
-            // Modo privado: coordenador clicou em "Visão do Aluno"
-            // Cada aluno vê apenas as próprias perguntas
-            if (modoPrivadoGlobal) return p.autorId === autorId;
-            return true;
-        })
+    [...cachePerguntasBase]
+        .sort((a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis()))
+        .filter(p => modoPrivadoGlobal ? p.autorId === autorId : true)
         .forEach(p => {
             const decorrido = Date.now() - p.data.toMillis();
             const dt = p.data.toDate();
             const dataFormatada = dt.toLocaleDateString('pt-BR');
             const horaFormatada = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
             let badges = p.isOuro ? '<span class="badge badge-ouro">✨ OURO</span>' : '';
             const total = cacheContagem[p.nome] || 0;
             if (total >= 3) badges += '<span class="badge badge-ativo">🔥 Protagonista</span>';
             else if (total === 2) badges += '<span class="badge badge-explorador">🧭 EXPLORADOR</span>';
             else badges += '<span class="badge badge-desbravador">🏆 DESBRAVADOR</span>';
             if (p.votos >= 3) badges += '<span class="badge badge-sintonia">🤝 SINTONIA</span>';
-
             const div = document.createElement("div");
             div.className = "pergunta " + (p.isOuro ? "pergunta-ouro" : "");
             div.innerHTML = `
@@ -327,87 +142,132 @@ function renderizarPerguntas() {
                 <div style="margin-bottom:8px;">${badges}</div>
                 <strong class="${SOU_COORDENADOR && !modoPrivadoGlobal ? 'nome-clicavel-admin' : ''}" onclick="altOuro('${p.id}',${p.isOuro})">${p.nome}</strong>
                 <p>${p.texto}</p>
-                <button class="btn-voto ${JSON.parse(localStorage.getItem("votos_realizados") || "[]").includes(p.id) ? 'ja-apoiado' : ''}" onclick="votar('${p.id}')">${p.votos} 👍</button>
-                ${p.autorId === autorId && decorrido < 300000 ? `
-                    <button class="btn-autor btn-edit-autor" onclick="prepararEdicao('${p.id}','${p.nome}','${p.texto}')">EDITAR</button>
-                    <button class="btn-autor btn-del-autor" onclick="removerMinhaPergunta('${p.id}')">APAGAR</button>
-                ` : ''}
-                ${SOU_COORDENADOR && !modoPrivadoGlobal ? `<button class="btn-admin-del" onclick="del('${p.id}')">ADMIN</button>` : ''}
+                <button class="btn-voto ${JSON.parse(localStorage.getItem("votos_realizados")||"[]").includes(p.id)?'ja-apoiado':''}" onclick="votar('${p.id}')">${p.votos} 👍</button>
+                ${p.autorId===autorId&&decorrido<300000?`<button class="btn-autor btn-edit-autor" onclick="prepararEdicao('${p.id}','${p.nome}','${p.texto}')">EDITAR</button><button class="btn-autor btn-del-autor" onclick="removerMinhaPergunta('${p.id}')">APAGAR</button>`:''}
+                ${SOU_COORDENADOR&&!modoPrivadoGlobal?`<button class="btn-admin-del" onclick="del('${p.id}')">ADMIN</button>`:''}
             `;
             lista.appendChild(div);
         });
 }
 
-onSnapshot(query(collection(db, "perguntas")), (snaps) => {
-    cachePerguntasBase = [];
-    cacheContagem = {};
-    const novosIds = new Set();
+function tocarSom() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [523, 659, 784].forEach((freq, i) => {
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq; osc.type = 'sine';
+            gain.gain.setValueAtTime(0.3, ctx.currentTime + i*0.15);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.15 + 0.3);
+            osc.start(ctx.currentTime + i*0.15); osc.stop(ctx.currentTime + i*0.15 + 0.3);
+        });
+    } catch(e) {}
+}
 
+function notificarNovaPergunta(nome) {
+    tocarSom();
+    if (Notification.permission === "granted") new Notification("💬 Nova pergunta no mural!", { body: `${nome} acabou de enviar uma pergunta.` });
+    const toast = document.createElement("div");
+    toast.innerText = `🔔 Nova pergunta de ${nome}!`;
+    Object.assign(toast.style, { position:"fixed", bottom:"30px", right:"30px", background:"#2563eb", color:"white", padding:"14px 22px", borderRadius:"12px", fontWeight:"bold", fontSize:"14px", boxShadow:"0 4px 20px rgba(0,0,0,0.2)", zIndex:9999, transition:"opacity 0.5s", opacity:"1" });
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity="0"; setTimeout(()=>toast.remove(),500); }, 4000);
+}
+
+// ── Listeners Firestore ── (declarados DEPOIS das funções) ─────
+
+onSnapshot(controleRef, (snap) => {
+    if (snap.exists()) {
+        modoPrivadoGlobal = snap.data().modoPrivado;
+        atualizarBotaoModo();
+        renderizarPerguntas(); // seguro — função já declarada acima
+    }
+});
+
+onSnapshot(query(collection(db, "perguntas")), (snaps) => {
+    cachePerguntasBase = []; cacheContagem = {};
+    const novosIds = new Set();
     snaps.forEach(d => {
         const data = d.data({ serverTimestamps: 'estimate' });
-        cacheContagem[data.nome] = (cacheContagem[data.nome] || 0) + 1;
+        cacheContagem[data.nome] = (cacheContagem[data.nome]||0) + 1;
         cachePerguntasBase.push({ id: d.id, ...data });
         novosIds.add(d.id);
     });
-
-    // Detecta perguntas novas e notifica — SOMENTE O COORDENADOR
     if (SOU_COORDENADOR && idsConhecidos !== null) {
-        cachePerguntasBase.forEach(p => {
-            if (!idsConhecidos.has(p.id) && p.autorId !== autorId) {
-                notificarNovaPergunta(p.nome);
-            }
-        });
+        cachePerguntasBase.forEach(p => { if (!idsConhecidos.has(p.id) && p.autorId !== autorId) notificarNovaPergunta(p.nome); });
     }
     idsConhecidos = novosIds;
-
     renderizarPerguntas();
 });
 
-window.prepararEdicao = (id, n, t) => {
-    window.editandoId = id;
-    document.getElementById("nome").value = n; document.getElementById("pergunta").value = t;
-    document.getElementById("btnEnviar").innerText = "SALVAR ALTERAÇÕES";
-    document.getElementById("btnCancelarEdit").style.display = "inline-block";
-    window.scrollTo({top: 0, behavior: 'smooth'});
+// ── Ações ──────────────────────────────────────────────────────
+const rolarFim = () => setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),500);
+
+window.compartilharMural = () => {
+    const url = window.location.href;
+    const texto = `*SISTEMA PEDAGÓGICO PNL 2026* 🚀\n\nParticipe do Mural Interativo!\n\nAcesse: ${url}`;
+    if (navigator.share) navigator.share({title:'Mural PNL 2026',text:texto,url}).catch(console.error);
+    else window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`,'_blank');
+};
+
+window.enviarPergunta = async () => {
+    const n = document.getElementById("nome"), p = document.getElementById("pergunta");
+    if (!p.value.trim()) return;
+    if (window.editandoId) {
+        await updateDoc(doc(db,"perguntas",window.editandoId), {nome:n.value||"Anônimo",texto:p.value});
+        cancelarEdicao();
+    } else {
+        await addDoc(collection(db,"perguntas"), {nome:n.value||"Anônimo",texto:p.value,votos:0,autorId,data:serverTimestamp(),isOuro:false});
+        confetti({particleCount:30});
+    }
+    rolarFim(); n.value=""; p.value="";
+};
+
+window.votar = async (id) => {
+    let votos = JSON.parse(localStorage.getItem("votos_realizados")||"[]");
+    if (votos.includes(id)) return;
+    await updateDoc(doc(db,"perguntas",id),{votos:increment(1)});
+    votos.push(id); localStorage.setItem("votos_realizados",JSON.stringify(votos));
+};
+
+window.prepararEdicao = (id,n,t) => {
+    window.editandoId=id;
+    document.getElementById("nome").value=n; document.getElementById("pergunta").value=t;
+    document.getElementById("btnEnviar").innerText="SALVAR ALTERAÇÕES";
+    document.getElementById("btnCancelarEdit").style.display="inline-block";
+    window.scrollTo({top:0,behavior:'smooth'});
 };
 
 window.cancelarEdicao = () => {
-    window.editandoId = null;
-    document.getElementById("nome").value = "";
-    document.getElementById("pergunta").value = "";
-    document.getElementById("btnEnviar").innerText = "ENVIAR PARA O MURAL";
-    document.getElementById("btnCancelarEdit").style.display = "none";
+    window.editandoId=null;
+    document.getElementById("nome").value=""; document.getElementById("pergunta").value="";
+    document.getElementById("btnEnviar").innerText="ENVIAR PARA O MURAL";
+    document.getElementById("btnCancelarEdit").style.display="none";
 };
 
-window.removerMinhaPergunta = async (id) => { if (confirm("Apagar pergunta?")) await deleteDoc(doc(db, "perguntas", id)); };
-window.altOuro = async (id, st) => SOU_COORDENADOR && await updateDoc(doc(db,"perguntas",id), {isOuro: !st});
+window.removerMinhaPergunta = async (id) => { if(confirm("Apagar pergunta?")) await deleteDoc(doc(db,"perguntas",id)); };
+window.altOuro = async (id,st) => SOU_COORDENADOR && await updateDoc(doc(db,"perguntas",id),{isOuro:!st});
 window.del = async (id) => SOU_COORDENADOR && confirm("Excluir como admin?") && await deleteDoc(doc(db,"perguntas",id));
-window.sairModoAdmin = () => {
-    localStorage.removeItem("permissao_admin");
-
-    // força modo privado ao sair
-    localStorage.setItem("modo_privado", "true");
-
-    location.reload();
-};
-window.filtrarOuro = () => { document.querySelectorAll('.pergunta').forEach(it => it.style.display = it.classList.contains('pergunta-ouro') ? 'block' : 'none'); };
-window.mostrarTudo = () => { document.querySelectorAll('.pergunta').forEach(it => it.style.display = 'block'); };
-
-let clks = 0;
-document.getElementById('tituloMural').addEventListener('click', () => {
-    if (++clks === 3) {
-        const s = prompt("Chave:");
-        if(s === "pnl_mestre_2026") { localStorage.setItem("permissao_admin", s); location.reload(); }
-        clks = 0;
+window.sairModoAdmin = () => { localStorage.removeItem("permissao_admin"); location.reload(); };
+window.toggleModoPrivado = async () => { if (SOU_COORDENADOR) await updateDoc(controleRef,{modoPrivado:!modoPrivadoGlobal}); };
+window.filtrarOuro = () => document.querySelectorAll('.pergunta').forEach(it=>it.style.display=it.classList.contains('pergunta-ouro')?'block':'none');
+window.mostrarTudo = () => document.querySelectorAll('.pergunta').forEach(it=>it.style.display='block');
+window.toggleGrafico = () => {
+    const g=document.getElementById("container-grafico");
+    g.style.display=g.style.display==="block"?"none":"block";
+    if(g.style.display==="block"){
+        const ctx=document.getElementById('meuGrafico').getContext('2d'), part={};
+        document.querySelectorAll('.pergunta strong').forEach(el=>{part[el.innerText]=(part[el.innerText]||0)+1;});
+        if(chartInstance) chartInstance.destroy();
+        chartInstance=new Chart(ctx,{type:'bar',data:{labels:Object.keys(part),datasets:[{label:'Perguntas',data:Object.values(part),backgroundColor:'#2563eb'}]},options:{responsive:true,maintainAspectRatio:false}});
     }
-    setTimeout(() => clks = 0, 2000);
-});
-window.toggleModoPrivado = async () => {
-    if (!SOU_COORDENADOR) return;
+};
 
-    await updateDoc(controleRef, {
-        modoPrivado: !modoPrivadoGlobal
-    });
-};</script>
+let clks=0;
+document.getElementById('tituloMural').addEventListener('click',()=>{
+    if(++clks===3){const s=prompt("Chave:");if(s==="pnl_mestre_2026"){localStorage.setItem("permissao_admin",s);location.reload();}clks=0;}
+    setTimeout(()=>clks=0,2000);
+});
+</script>
 </body>
 </html>
