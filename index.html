@@ -48,7 +48,59 @@
     #painel-controle { display: none; background: #1e293b; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; gap: 10px; justify-content: center; flex-wrap: wrap; }
    
 #container-grafico { display: none; margin-bottom: 20px; height: 350px; }
-    .btn-painel { padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; border: none; color: white; text-transform: uppercase; }
+    .btn-painel { padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; border: none; color: white; text-transform: uppercase; transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease; }
+    .btn-painel:hover { transform: translateY(-2px); filter: brightness(1.15); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+    .btn-painel:active { transform: scale(0.9); filter: brightness(0.9); box-shadow: none; }
+
+    @keyframes btnPop {
+        0%   { transform: scale(1); }
+        30%  { transform: scale(0.88); }
+        60%  { transform: scale(1.12); }
+        80%  { transform: scale(0.97); }
+        100% { transform: scale(1); }
+    }
+    @keyframes btnShake {
+        0%, 100% { transform: translateX(0) scale(1); }
+        20%      { transform: translateX(-5px) scale(0.95); }
+        40%      { transform: translateX(5px) scale(0.95); }
+        60%      { transform: translateX(-3px) scale(0.97); }
+        80%      { transform: translateX(3px) scale(0.97); }
+    }
+    @keyframes btnSpin {
+        0%   { transform: rotate(0deg) scale(1); }
+        40%  { transform: rotate(-15deg) scale(0.9); }
+        70%  { transform: rotate(10deg) scale(1.05); }
+        100% { transform: rotate(0deg) scale(1); }
+    }
+    @keyframes btnBounce {
+        0%, 100% { transform: translateY(0) scale(1); }
+        30%      { transform: translateY(-8px) scale(1.05); }
+        60%      { transform: translateY(3px) scale(0.97); }
+        80%      { transform: translateY(-3px) scale(1.01); }
+    }
+    @keyframes btnFlash {
+        0%, 100% { filter: brightness(1); }
+        25%      { filter: brightness(1.6); }
+        50%      { filter: brightness(0.85); }
+        75%      { filter: brightness(1.4); }
+    }
+    @keyframes btnWiggle {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        20%      { transform: rotate(-8deg) scale(0.92); }
+        40%      { transform: rotate(8deg) scale(1.08); }
+        60%      { transform: rotate(-5deg) scale(0.96); }
+        80%      { transform: rotate(5deg) scale(1.03); }
+    }
+    .anim-pop    { animation: btnPop    0.4s ease forwards !important; }
+    .anim-shake  { animation: btnShake  0.4s ease forwards !important; }
+    .anim-spin   { animation: btnSpin   0.4s ease forwards !important; }
+    .anim-bounce { animation: btnBounce 0.5s ease forwards !important; }
+    .anim-flash  { animation: btnFlash  0.4s ease forwards !important; }
+    .anim-wiggle { animation: btnWiggle 0.45s ease forwards !important; }
+
+    #painel-controle button { transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease; }
+    #painel-controle button:not(.btn-painel):hover { transform: translateY(-2px); filter: brightness(1.15); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+    #painel-controle button:not(.btn-painel):active { transform: scale(0.9); }
 
     /* BADGES */
     .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-right: 5px; text-transform: uppercase; margin-bottom: 5px; border: 1px solid transparent; }
@@ -90,12 +142,12 @@
 
 <div class="container">
     <div id="painel-controle">
-        <button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
-        <button class="btn-painel" onclick="toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
-        <button class="btn-painel" onclick="filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
-        <button class="btn-painel" onclick="mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
-        <button onclick="compartilharMural()" style="background: #16a34a; border: none; border-radius: 10px;">📲 Compartilhar Mural</button>
-<button id="btnModoPrivado" class="btn-painel" onclick="toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
+        <button class="btn-painel" onclick="animarBotao(this,'anim-bounce'); toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
+        <button class="btn-painel" onclick="animarBotao(this,'anim-spin'); filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
+        <button class="btn-painel" onclick="animarBotao(this,'anim-pop'); mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
+<button class="btn-painel" onclick="animarBotao(this,'anim-wiggle'); compartilharMural()" style="background: #16a34a !important; border-radius: 10px;">📲 Compartilhar Mural</button>
+<button class="btn-painel" onclick="animarBotao(this,'anim-shake'); sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
+<button id="btnModoPrivado" class="btn-painel" onclick="animarBotao(this,'anim-flash'); toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
     </div>
 
     <div id="container-grafico" class="card">
@@ -122,7 +174,7 @@
         <strong style="color: #0369a1; margin-bottom: 0">🧭 EXPLORADOR</strong> Duas perguntas enviadas.
     </div>
     <div class="item-guia">
-        <strong style="color: #4338ca; margin-bottom: 0">🔥 Protagonista</strong> Três ou mais perguntas.
+        <strong style="color: #4338ca; margin-bottom: 0">🔥 Protagonista</strong> 3 ou mais perguntas.
     </div>
     <div class="item-guia" id="guia-sintonia">
         <strong style="color: #854d0e; margin-bottom: 0">🤝 SINTONIA</strong> 3 ou mais apoios (votos).
@@ -139,6 +191,14 @@
     </div>
 </div>
 
+<script>
+function animarBotao(el, classe) {
+    el.classList.remove('anim-pop','anim-shake','anim-spin','anim-bounce','anim-flash','anim-wiggle');
+    void el.offsetWidth; // força reflow para reiniciar animação
+    el.classList.add(classe);
+    el.addEventListener('animationend', () => el.classList.remove(classe), { once: true });
+}
+</script>
 <script type="module">
 
 window.compartilharMural = () => {
