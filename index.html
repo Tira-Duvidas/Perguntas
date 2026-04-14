@@ -48,59 +48,7 @@
     #painel-controle { display: none; background: #1e293b; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; gap: 10px; justify-content: center; flex-wrap: wrap; }
    
 #container-grafico { display: none; margin-bottom: 20px; height: 350px; }
-    .btn-painel { padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; border: none; color: white; text-transform: uppercase; transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease; }
-    .btn-painel:hover { transform: translateY(-2px); filter: brightness(1.15); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
-    .btn-painel:active { transform: scale(0.9); filter: brightness(0.9); box-shadow: none; }
-
-    @keyframes btnPop {
-        0%   { transform: scale(1); }
-        30%  { transform: scale(0.88); }
-        60%  { transform: scale(1.12); }
-        80%  { transform: scale(0.97); }
-        100% { transform: scale(1); }
-    }
-    @keyframes btnShake {
-        0%, 100% { transform: translateX(0) scale(1); }
-        20%      { transform: translateX(-5px) scale(0.95); }
-        40%      { transform: translateX(5px) scale(0.95); }
-        60%      { transform: translateX(-3px) scale(0.97); }
-        80%      { transform: translateX(3px) scale(0.97); }
-    }
-    @keyframes btnSpin {
-        0%   { transform: rotate(0deg) scale(1); }
-        40%  { transform: rotate(-15deg) scale(0.9); }
-        70%  { transform: rotate(10deg) scale(1.05); }
-        100% { transform: rotate(0deg) scale(1); }
-    }
-    @keyframes btnBounce {
-        0%, 100% { transform: translateY(0) scale(1); }
-        30%      { transform: translateY(-8px) scale(1.05); }
-        60%      { transform: translateY(3px) scale(0.97); }
-        80%      { transform: translateY(-3px) scale(1.01); }
-    }
-    @keyframes btnFlash {
-        0%, 100% { filter: brightness(1); }
-        25%      { filter: brightness(1.6); }
-        50%      { filter: brightness(0.85); }
-        75%      { filter: brightness(1.4); }
-    }
-    @keyframes btnWiggle {
-        0%, 100% { transform: rotate(0deg) scale(1); }
-        20%      { transform: rotate(-8deg) scale(0.92); }
-        40%      { transform: rotate(8deg) scale(1.08); }
-        60%      { transform: rotate(-5deg) scale(0.96); }
-        80%      { transform: rotate(5deg) scale(1.03); }
-    }
-    .anim-pop    { animation: btnPop    0.4s ease forwards !important; }
-    .anim-shake  { animation: btnShake  0.4s ease forwards !important; }
-    .anim-spin   { animation: btnSpin   0.4s ease forwards !important; }
-    .anim-bounce { animation: btnBounce 0.5s ease forwards !important; }
-    .anim-flash  { animation: btnFlash  0.4s ease forwards !important; }
-    .anim-wiggle { animation: btnWiggle 0.45s ease forwards !important; }
-
-    #painel-controle button { transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease; }
-    #painel-controle button:not(.btn-painel):hover { transform: translateY(-2px); filter: brightness(1.15); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
-    #painel-controle button:not(.btn-painel):active { transform: scale(0.9); }
+    .btn-painel { padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; border: none; color: white; text-transform: uppercase; }
 
     /* BADGES */
     .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-right: 5px; text-transform: uppercase; margin-bottom: 5px; border: 1px solid transparent; }
@@ -142,12 +90,12 @@
 
 <div class="container">
     <div id="painel-controle">
-        <button class="btn-painel" onclick="animarBotao(this,'anim-bounce'); toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
-        <button class="btn-painel" onclick="animarBotao(this,'anim-spin'); filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
-        <button class="btn-painel" onclick="animarBotao(this,'anim-pop'); mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
-<button class="btn-painel" onclick="animarBotao(this,'anim-wiggle'); compartilharMural()" style="background: #16a34a !important; border-radius: 10px;">📲 Compartilhar Mural</button>
-<button class="btn-painel" onclick="animarBotao(this,'anim-shake'); sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
-<button id="btnModoPrivado" class="btn-painel" onclick="animarBotao(this,'anim-flash'); toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
+        <button class="btn-painel" onclick="toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
+        <button class="btn-painel" onclick="filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
+        <button class="btn-painel" onclick="mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
+<button onclick="compartilharMural()" style="background: #16a34a; border: none; border-radius: 10px;">📲 Compartilhar Mural</button>
+<button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
+<button id="btnModoPrivado" class="btn-painel" onclick="toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
     </div>
 
     <div id="container-grafico" class="card">
@@ -191,14 +139,6 @@
     </div>
 </div>
 
-<script>
-function animarBotao(el, classe) {
-    el.classList.remove('anim-pop','anim-shake','anim-spin','anim-bounce','anim-flash','anim-wiggle');
-    void el.offsetWidth; // força reflow para reiniciar animação
-    el.classList.add(classe);
-    el.addEventListener('animationend', () => el.classList.remove(classe), { once: true });
-}
-</script>
 <script type="module">
 
 window.compartilharMural = () => {
@@ -216,7 +156,7 @@ window.compartilharMural = () => {
     }
 };
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, increment, serverTimestamp, deleteDoc, enableNetwork, disableNetwork } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA0_tVm5YnikX-oAfABWTOblNxWD-Yq3z0",
@@ -229,8 +169,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// Garante que o Firestore está sempre conectado ao servidor (evita cache travado em mobile)
-enableNetwork(db).catch(() => {});
 let modoPrivadoGlobal = false;
 const controleRef = doc(db, "controle", "sala");
 
@@ -238,8 +176,8 @@ onSnapshot(controleRef, (snap) => {
     if (snap.exists()) {
         modoPrivadoGlobal = snap.data().modoPrivado;
         atualizarTextoModoPrivado();
-        // 🔥 redesenha o mural imediatamente para todos os navegadores
-        if (typeof renderizarPerguntas === "function") renderizarPerguntas();
+        // 🔥 redesenha o mural — usa setTimeout para garantir que renderizarPerguntas já foi declarada
+        setTimeout(() => { if (typeof renderizarPerguntas === "function") renderizarPerguntas(); }, 0);
     }
 });
 
@@ -359,7 +297,7 @@ function renderizarPerguntas() {
     if (guiaSintonia) guiaSintonia.style.display = modoPrivadoGlobal ? "none" : "";
 
     const perguntasOrdenadas = [...cachePerguntasBase].sort(
-        (a, b) => (b.votos - a.votos) || ((a.data?.toMillis?.() ?? 0) - (b.data?.toMillis?.() ?? 0))
+        (a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis())
     );
 
     perguntasOrdenadas
@@ -370,8 +308,8 @@ function renderizarPerguntas() {
             return true;
         })
         .forEach(p => {
-            const decorrido = Date.now() - (p.data?.toMillis?.() ?? Date.now());
-            const dt = p.data?.toDate?.() ?? new Date();
+            const decorrido = Date.now() - p.data.toMillis();
+            const dt = p.data.toDate();
             const dataFormatada = dt.toLocaleDateString('pt-BR');
             const horaFormatada = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
@@ -400,19 +338,19 @@ function renderizarPerguntas() {
         });
 }
 
-function processarSnapshot(snaps) {
+onSnapshot(query(collection(db, "perguntas")), (snaps) => {
     cachePerguntasBase = [];
     cacheContagem = {};
     const novosIds = new Set();
 
     snaps.forEach(d => {
         const data = d.data({ serverTimestamps: 'estimate' });
-        if (!data.data) return;
         cacheContagem[data.nome] = (cacheContagem[data.nome] || 0) + 1;
         cachePerguntasBase.push({ id: d.id, ...data });
         novosIds.add(d.id);
     });
 
+    // Detecta perguntas novas e notifica — SOMENTE O COORDENADOR
     if (SOU_COORDENADOR && idsConhecidos !== null) {
         cachePerguntasBase.forEach(p => {
             if (!idsConhecidos.has(p.id) && p.autorId !== autorId) {
@@ -421,35 +359,8 @@ function processarSnapshot(snaps) {
         });
     }
     idsConhecidos = novosIds;
+
     renderizarPerguntas();
-}
-
-let unsubscribePerguntas = null;
-
-function iniciarListener() {
-    if (unsubscribePerguntas) unsubscribePerguntas();
-    unsubscribePerguntas = onSnapshot(
-        query(collection(db, "perguntas")),
-        { includeMetadataChanges: false },
-        processarSnapshot,
-        (err) => {
-            // Se o listener morrer, tenta reconectar em 3s
-            console.warn("Listener encerrado, reconectando...", err);
-            setTimeout(iniciarListener, 3000);
-        }
-    );
-}
-
-iniciarListener();
-
-// Reconecta o listener quando o celular volta do segundo plano
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-        enableNetwork(db).then(() => iniciarListener()).catch(() => iniciarListener());
-    } else {
-        // Quando vai para segundo plano, desliga a rede para evitar conexões travadas
-        disableNetwork(db).catch(() => {});
-    }
 });
 
 window.prepararEdicao = (id, n, t) => {
