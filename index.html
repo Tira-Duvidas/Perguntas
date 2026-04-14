@@ -72,7 +72,7 @@
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore, enableNetwork, collection, addDoc, onSnapshot, query, updateDoc, setDoc, doc, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA0_tVm5YnikX-oAfABWTOblNxWD-Yq3z0",
@@ -86,6 +86,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const controleRef = doc(db, "controle", "sala");
+
+// Força conexão em tempo real (evita modo offline/cache no mobile)
+enableNetwork(db).catch(console.error);
 
 // ── Estado global ──────────────────────────────────────────────
 const SOU_COORDENADOR = localStorage.getItem("permissao_admin") === "pnl_mestre_2026";
@@ -177,11 +180,16 @@ function notificarNovaPergunta(nome) {
 // ── Listeners Firestore ── (declarados DEPOIS das funções) ─────
 
 onSnapshot(controleRef, (snap) => {
+    console.log("[controle] snap recebido, exists:", snap.exists(), snap.exists() ? snap.data() : "vazio");
     if (snap.exists()) {
-        modoPrivadoGlobal = snap.data().modoPrivado;
-        atualizarBotaoModo();
-        renderizarPerguntas(); // seguro — função já declarada acima
+        modoPrivadoGlobal = snap.data().modoPrivado ?? false;
+    } else {
+        // Cria o documento se não existir ainda
+        setDoc(controleRef, { modoPrivado: false });
+        modoPrivadoGlobal = false;
     }
+    atualizarBotaoModo();
+    renderizarPerguntas();
 });
 
 onSnapshot(query(collection(db, "perguntas")), (snaps) => {
@@ -262,6 +270,13 @@ window.toggleGrafico = () => {
         chartInstance=new Chart(ctx,{type:'bar',data:{labels:Object.keys(part),datasets:[{label:'Perguntas',data:Object.values(part),backgroundColor:'#2563eb'}]},options:{responsive:true,maintainAspectRatio:false}});
     }
 };
+
+// Reconexão automática quando o celular volta do segundo plano
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+        enableNetwork(db).then(() => renderizarPerguntas()).catch(console.error);
+    }
+});
 
 let clks=0;
 document.getElementById('tituloMural').addEventListener('click',()=>{
