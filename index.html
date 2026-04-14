@@ -12,11 +12,11 @@
     .card { background:white; padding:25px; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin-bottom:20px; border: 1px solid #e2e8f0; position: relative; }
     h2 { color: #0f172a; font-weight: 700; margin-top: 0; }
     input, textarea { width:100%; padding:14px; margin-bottom:12px; border-radius:10px; border:1px solid #cbd5e1; box-sizing: border-box; font-size: 1rem; }
-    #btnEnviar { position: relative; overflow: hidden; padding:12px 20px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight: 700; transition: all 0.3s ease; animation: pulsar 2.5s infinite; }
+    #btnEnviar { position: relative; overflow: hidden; padding:12px 20px; border:none; border-radius:10px; cursor:pointer; background:#059669; color:white; font-weight: 700; transition: all 0.3s ease; animation: pulsar 2.5s infinite; }
     #btnEnviar:hover { transform: translateY(-2px); filter: brightness(1.1); animation: none; }
     #btnEnviar:active { transform: scale(0.95); }
     #btnCancelarEdit { background: #ef4444 !important; color: white; padding: 12px 20px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-left: 10px; transition: opacity 0.2s; display: none; }
-    @keyframes pulsar { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
+    @keyframes pulsar { 0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(5, 150, 105, 0); } 100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); } }
     .btn-voto, .btn-autor, .btn-admin-del { background: #10b981 !important; color: white !important; padding: 6px 0; font-size: 10px; width: 65px; text-align: center; display: inline-block; border-radius: 8px; margin-left: 5px; font-weight: bold; text-transform: uppercase; border: none; cursor: pointer; opacity: 0.7 !important; transition: opacity 0.2s; }
     .ja-apoiado { opacity: 0.7; cursor: default; }
     .btn-edit-autor { background: #64748b !important; }
@@ -52,12 +52,12 @@
 <body>
 <div class="container">
     <div id="painel-controle">
-        <button class="btn-painel" onclick="toggleGrafico()" style="background:#8b5cf6 !important;">📊 Ranking</button>
-        <button class="btn-painel" onclick="filtrarOuro()" style="background:#fbbf24 !important; color:#92400e !important;">✨ Destaques</button>
-        <button class="btn-painel" onclick="mostrarTudo()" style="background:#3b82f6 !important;">👁️ Mostrar Tudo</button>
-        <button onclick="compartilharMural()" style="background:#16a34a;border:none;border-radius:10px;padding:8px 15px;color:white;font-weight:bold;font-size:11px;cursor:pointer;">📲 Compartilhar Mural</button>
-        <button class="btn-painel" onclick="sairModoAdmin()" style="background: #ef4444 !important;">🚪 Sair</button>
-        <button id="btnModoPrivado" class="btn-painel" onclick="toggleModoPrivado()" style="background:#0ea5e9 !important;"></button>
+        <button class="btn-painel" onclick="toggleGrafico()" style="background:#4f46e5 !important;">📊 Ranking</button>
+        <button class="btn-painel" onclick="filtrarOuro()" style="background:#6366f1 !important;">✨ Destaques</button>
+        <button class="btn-painel" onclick="mostrarTudo()" style="background:#818cf8 !important;">👁️ Mostrar Tudo</button>
+        <button class="btn-painel" onclick="compartilharMural()" style="background:#a5b4fc !important; color:#1e1b4b !important;">📲 Compartilhar</button>
+        <button class="btn-painel" onclick="sairModoAdmin()" style="background:#475569 !important;">🚪 Sair</button>
+        <button id="btnModoPrivado" class="btn-painel" onclick="toggleModoPrivado()" style="background:#334155 !important;"></button>
     </div>
     <div id="container-grafico" class="card"><canvas id="meuGrafico"></canvas></div>
     <div class="card">
