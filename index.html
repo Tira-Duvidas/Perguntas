@@ -125,11 +125,11 @@ function renderizarPerguntas() {
     atualizarGuiaSintonia();
 
     [...cachePerguntasBase]
-        .sort((a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis()))
+        .sort((a, b) => (b.votos - a.votos) || ((a.data?.toMillis?.() ?? 0) - (b.data?.toMillis?.() ?? 0)))
         .filter(p => modoPrivadoGlobal ? p.autorId === autorId : true)
         .forEach(p => {
-            const decorrido = Date.now() - p.data.toMillis();
-            const dt = p.data.toDate();
+            const decorrido = Date.now() - (p.data?.toMillis?.() ?? 0);
+            const dt = p.data?.toDate?.() ?? new Date();
             const dataFormatada = dt.toLocaleDateString('pt-BR');
             const horaFormatada = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             let badges = p.isOuro ? '<span class="badge badge-ouro">✨ OURO</span>' : '';
@@ -197,6 +197,8 @@ onSnapshot(query(collection(db, "perguntas")), (snaps) => {
     const novosIds = new Set();
     snaps.forEach(d => {
         const data = d.data({ serverTimestamps: 'estimate' });
+        // Garante que data sempre existe (evita crash no mobile)
+        if (!data.data) data.data = { toMillis: () => 0, toDate: () => new Date() };
         cacheContagem[data.nome] = (cacheContagem[data.nome]||0) + 1;
         cachePerguntasBase.push({ id: d.id, ...data });
         novosIds.add(d.id);
