@@ -357,7 +357,7 @@ function renderizarPerguntas() {
     if (guiaSintonia) guiaSintonia.style.display = modoPrivadoGlobal ? "none" : "";
 
     const perguntasOrdenadas = [...cachePerguntasBase].sort(
-        (a, b) => (b.votos - a.votos) || (a.data.toMillis() - b.data.toMillis())
+        (a, b) => (b.votos - a.votos) || ((a.data?.toMillis?.() ?? 0) - (b.data?.toMillis?.() ?? 0))
     );
 
     perguntasOrdenadas
@@ -368,8 +368,8 @@ function renderizarPerguntas() {
             return true;
         })
         .forEach(p => {
-            const decorrido = Date.now() - p.data.toMillis();
-            const dt = p.data.toDate();
+            const decorrido = Date.now() - (p.data?.toMillis?.() ?? Date.now());
+            const dt = p.data?.toDate?.() ?? new Date();
             const dataFormatada = dt.toLocaleDateString('pt-BR');
             const horaFormatada = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
@@ -405,6 +405,8 @@ onSnapshot(query(collection(db, "perguntas")), (snaps) => {
 
     snaps.forEach(d => {
         const data = d.data({ serverTimestamps: 'estimate' });
+        // Ignora documentos que ainda não têm timestamp resolvido
+        if (!data.data) return;
         cacheContagem[data.nome] = (cacheContagem[data.nome] || 0) + 1;
         cachePerguntasBase.push({ id: d.id, ...data });
         novosIds.add(d.id);
