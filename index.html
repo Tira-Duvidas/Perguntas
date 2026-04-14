@@ -216,7 +216,7 @@ window.compartilharMural = () => {
     }
 };
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, updateDoc, doc, increment, serverTimestamp, deleteDoc, enableNetwork, disableNetwork } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA0_tVm5YnikX-oAfABWTOblNxWD-Yq3z0",
@@ -229,6 +229,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+// Garante que o Firestore está sempre conectado ao servidor (evita cache travado em mobile)
+enableNetwork(db).catch(() => {});
 let modoPrivadoGlobal = false;
 const controleRef = doc(db, "controle", "sala");
 
@@ -398,21 +400,19 @@ function renderizarPerguntas() {
         });
 }
 
-onSnapshot(query(collection(db, "perguntas")), (snaps) => {
+function processarSnapshot(snaps) {
     cachePerguntasBase = [];
     cacheContagem = {};
     const novosIds = new Set();
 
     snaps.forEach(d => {
         const data = d.data({ serverTimestamps: 'estimate' });
-        // Ignora documentos que ainda não têm timestamp resolvido
         if (!data.data) return;
         cacheContagem[data.nome] = (cacheContagem[data.nome] || 0) + 1;
         cachePerguntasBase.push({ id: d.id, ...data });
         novosIds.add(d.id);
     });
 
-    // Detecta perguntas novas e notifica — SOMENTE O COORDENADOR
     if (SOU_COORDENADOR && idsConhecidos !== null) {
         cachePerguntasBase.forEach(p => {
             if (!idsConhecidos.has(p.id) && p.autorId !== autorId) {
@@ -421,8 +421,35 @@ onSnapshot(query(collection(db, "perguntas")), (snaps) => {
         });
     }
     idsConhecidos = novosIds;
-
     renderizarPerguntas();
+}
+
+let unsubscribePerguntas = null;
+
+function iniciarListener() {
+    if (unsubscribePerguntas) unsubscribePerguntas();
+    unsubscribePerguntas = onSnapshot(
+        query(collection(db, "perguntas")),
+        { includeMetadataChanges: false },
+        processarSnapshot,
+        (err) => {
+            // Se o listener morrer, tenta reconectar em 3s
+            console.warn("Listener encerrado, reconectando...", err);
+            setTimeout(iniciarListener, 3000);
+        }
+    );
+}
+
+iniciarListener();
+
+// Reconecta o listener quando o celular volta do segundo plano
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+        enableNetwork(db).then(() => iniciarListener()).catch(() => iniciarListener());
+    } else {
+        // Quando vai para segundo plano, desliga a rede para evitar conexões travadas
+        disableNetwork(db).catch(() => {});
+    }
 });
 
 window.prepararEdicao = (id, n, t) => {
