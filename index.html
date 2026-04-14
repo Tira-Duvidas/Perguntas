@@ -193,21 +193,24 @@ onSnapshot(controleRef, (snap) => {
 });
 
 onSnapshot(query(collection(db, "perguntas")), (snaps) => {
-    cachePerguntasBase = []; cacheContagem = {};
-    const novosIds = new Set();
-    snaps.forEach(d => {
-        const data = d.data({ serverTimestamps: 'estimate' });
-        // Garante que data sempre existe (evita crash no mobile)
-        if (!data.data) data.data = { toMillis: () => 0, toDate: () => new Date() };
-        cacheContagem[data.nome] = (cacheContagem[data.nome]||0) + 1;
-        cachePerguntasBase.push({ id: d.id, ...data });
-        novosIds.add(d.id);
-    });
-    if (SOU_COORDENADOR && idsConhecidos !== null) {
-        cachePerguntasBase.forEach(p => { if (!idsConhecidos.has(p.id) && p.autorId !== autorId) notificarNovaPergunta(p.nome); });
+    try {
+        cachePerguntasBase = []; cacheContagem = {};
+        const novosIds = new Set();
+        snaps.forEach(d => {
+            const data = d.data({ serverTimestamps: 'estimate' });
+            if (!data.data) data.data = { toMillis: () => 0, toDate: () => new Date() };
+            cacheContagem[data.nome] = (cacheContagem[data.nome]||0) + 1;
+            cachePerguntasBase.push({ id: d.id, ...data });
+            novosIds.add(d.id);
+        });
+        if (SOU_COORDENADOR && idsConhecidos !== null) {
+            cachePerguntasBase.forEach(p => { if (!idsConhecidos.has(p.id) && p.autorId !== autorId) notificarNovaPergunta(p.nome); });
+        }
+        idsConhecidos = novosIds;
+        renderizarPerguntas();
+    } catch(e) {
+        alert("ERRO onSnapshot perguntas: " + e.message);
     }
-    idsConhecidos = novosIds;
-    renderizarPerguntas();
 });
 
 // ── Ações ──────────────────────────────────────────────────────
